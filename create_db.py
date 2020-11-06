@@ -93,10 +93,7 @@ def cleanData(users, books, ratings):
 
     ### BOOKS ###
     #compact books with the same title and author
-    books = compactBooks(books)
-
-
-
+    books, ratings = compactBooks(books, ratings)
 
     ### RATINGS ###
 
@@ -105,6 +102,11 @@ def cleanData(users, books, ratings):
     #separate implicit and explicit ratings
     ratings_implicit = ratings_allbooks[ratings_allbooks["rate"] == 0]
     ratings_explicit = ratings_allbooks[ratings_allbooks["rate"] != 0]
+
+    #remove duplicates if users read multiple versions of the same book
+    ratings_implicit.drop_duplicates(subset=['ISBN', 'User-ID'], inplace=True)
+    ratings_explicit.drop_duplicates(subset=['ISBN', 'User-ID'], inplace=True)
+
     #set implicit ratings to 1, so that read = 1, unread = 0 later
     ratings_implicit["rate"] = np.ones(len(ratings_implicit['rate']))
 

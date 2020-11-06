@@ -22,6 +22,8 @@ class Book:
         self.author = b[3]
         self.year = b[4]
 
+        conn.close()
+
     #find a book by id
     def id_to_book(self, id):
         self.id = id
@@ -35,6 +37,26 @@ class Book:
         self.title = b[2]
         self.author = b[3]
         self.year = b[4]
+
+        conn.close()
+
+    def title_to_book(self, title1, title2, author):
+        #parse title to core words
+
+
+        conn = sqlite3.connect("bookreviews.db")
+        cursor = conn.cursor()
+        #find book where title contains core words
+        cursor.execute('SELECT * FROM book WHERE LOWER(book.title) LIKE ? and LOWER(book.title) LIKE ? and lower(book.author) LIKE ?', (title1, title2, author))
+        b = cursor.fetchall()
+        print(b)
+        #self.isbn = b[1]
+        #self.title = b[2]
+        #self.title = id
+        #self.author = b[3]
+        #self.year = b[4]
+
+        conn.close()
 
 
 
@@ -53,3 +75,5 @@ if __name__ == '__main__':
     print(b.title)
     print(b.author)
     print(b.year)
+
+    b.title_to_book('%rites%', '%passage%', '%william golding%')
