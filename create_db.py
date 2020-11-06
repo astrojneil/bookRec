@@ -53,6 +53,32 @@ def opencsv(csvname):
     csv = pd.read_csv(csvname, sep=';', error_bad_lines = False, encoding='latin-1')
     return csv
 
+def compactBooks(book, ratings):
+    #count entries with same name and same author
+    bookgroups = book.groupby(["title", "author"])
+
+    booksort = bookgroups.size().sort_values(ascending=False)
+    for i, ind in enumerate(booksort.index):
+        #look only at the ones with counts > 1
+        if booksort.values[i] == 1:
+            continue
+        else:
+            thisgroup = bookgroups.groups[ind[0], ind[1]]
+            firstind = thisgroup[0]
+            firstisbn = book['isbn'][firstind]  #get isbn for book with this index
+            #loop through others in groups
+            for i in thisgroup[1:]:
+                #change isbns in *ratings* of group to firstisbn
+                copyisbn = book['isbn'][i]
+                ratingsOnCopy = np.where(ratings['isbn']==copyisbn)
+                ratings['isbn'][ratingsOnCopy[0]] = firstisbn
+
+                #drop row of book copy
+                book.drop([i], inplace=True)
+
+    return book, ratings
+
+
 def cleanData(users, books, ratings):
     #change column names
     users.columns = ['id', 'age']
@@ -66,8 +92,11 @@ def cleanData(users, books, ratings):
     users['age'] = users['age'].where(pd.notnull(users['age']), int(users['age'].mean()))
 
     ### BOOKS ###
-    books['title'] = books['title'].astype('str')
-    books['title'] = books['title'].astype('str')
+    #compact books with the same title and author
+    books = compactBooks(books)
+
+
+
 
     ### RATINGS ###
 
