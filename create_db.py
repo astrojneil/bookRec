@@ -66,15 +66,14 @@ def cleanRatings(allratings, books):
 
 def addToTables(cursor, csvTable, sqTable):
     if sqTable =='users':
-        format_str = """INSERT INTO user (id, age) VALUES (NULL, "{age}");"""
+        format_str = """INSERT INTO user (age) VALUES ("{age}");"""
 
         for i in range(len(csvTable)):
             sql_command = format_str.format(age=csvTable['Age'][i])
             cursor.execute(sql_command)
 
     if sqTable =='books':
-        format_str = """INSERT INTO book (id, isbn, title, author, year)
-        VALUES (NULL, "{isbn}", "{title}", "{author}", "{year}");"""
+        format_str = """INSERT INTO book (isbn, title, author, year) VALUES ("{isbn}", "{title}", "{author}", "{year}");"""
 
         for i in range(len(csvTable)):
             sql_command = format_str.format(isbn=csvTable['ISBN'][i], title=csvTable['Book-Title'][i],
@@ -82,8 +81,7 @@ def addToTables(cursor, csvTable, sqTable):
             cursor.execute(sql_command)
 
     if sqTable == 'reviewExp':
-        format_str = """INSERT INTO reviewExp (id, isbn, user_id, rate)
-        VALUES (NULL, "{isbn}", "{user}", "{rate}");"""
+        format_str = """INSERT INTO reviewExp (isbn, user_id, rate) VALUES ("{isbn}", "{user}", "{rate}");"""
 
         for i in range(len(csvTable)):
             sql_command = format_str.format(isbn=csvTable['ISBN'][i], user=csvTable['User-ID'][i],
@@ -91,8 +89,7 @@ def addToTables(cursor, csvTable, sqTable):
             cursor.execute(sql_command)
 
     if sqTable == 'reviewImp':
-        format_str = """INSERT INTO reviewImp (id, isbn, user_id, rate)
-        VALUES (NULL, "{isbn}", "{user}", "{rate}");"""
+        format_str = """INSERT INTO reviewImp (isbn, user_id, rate) VALUES ("{isbn}", "{user}", "{rate}");"""
 
         for i in range(len(csvTable)):
             sql_command = format_str.format(isbn=csvTable['ISBN'][i], user=csvTable['User-ID'][i],
