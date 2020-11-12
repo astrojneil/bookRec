@@ -76,20 +76,24 @@ class User:
         id = self.id
         conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
+
         cursor.execute('DELETE FROM user WHERE user.id = ?', (id,))
         cursor.execute('DELETE FROM reviewImp WHERE reviewImp.user_id = ?', (id,))
         cursor.execute('DELETE FROM reviewExp WHERE reviewExp.user_id = ?', (id,))
         conn.commit()
+        
         print('User {} deleted'.format(id))
         conn.close()
 
     def deleteUser_id(self, id):
         conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
+
         cursor.execute('DELETE FROM user WHERE user.id = ?', (id,))
         cursor.execute('DELETE FROM reviewImp WHERE reviewImp.user_id = ?', (id,))
         cursor.execute('DELETE FROM reviewExp WHERE reviewExp.user_id = ?', (id,))
         conn.commit()
+
         print('User {} deleted'.format(id))
         conn.close()
 
