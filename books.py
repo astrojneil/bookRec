@@ -1,4 +1,7 @@
 import sqlite3
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
 
 class Book:
     def __init__(self):
@@ -40,21 +43,35 @@ class Book:
 
         conn.close()
 
-    def title_to_book(self, title1, title2, author):
+    def title_to_book(self, title):
         #parse title to core words
+        stop_words = set(stopwords.words('english'))
+        words = word_tokenize(title.lower())
 
+        filtered_title = [w for w in words if not w in stop_words]
 
         conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
+
+        #create the sql command to find where title contains these words
+        execute_string = 'SELECT * FROM book WHERE '
+        for i, word in enumerate(filtered_title):
+            if i == 0:
+                execute_string = execute_string+'LOWER(book.title) LIKE ? '
+            else:
+                execute_string = execute_string+'and LOWER(book.title) LIKE ? '
+            filtered_title[i] = '%'+word+'%'
+
+
         #find book where title contains core words
-        cursor.execute('SELECT * FROM book WHERE LOWER(book.title) LIKE ? and LOWER(book.title) LIKE ? and lower(book.author) LIKE ?', (title1, title2, author))
-        b = cursor.fetchall()
+        cursor.execute(execute_string, tuple(filtered_title))
+        b = cursor.fetchone()
         print(b)
-        #self.isbn = b[1]
-        #self.title = b[2]
-        #self.title = id
-        #self.author = b[3]
-        #self.year = b[4]
+        self.id = b[0]
+        self.isbn = b[1]
+        self.title = b[2]
+        self.author = b[3]
+        self.year = b[4]
 
         conn.close()
 
@@ -76,4 +93,9 @@ if __name__ == '__main__':
     print(b.author)
     print(b.year)
 
-    b.title_to_book('%rites%', '%passage%', '%william golding%')
+    b.title_to_book('Carnival of the Spirit')
+    print(b.id)
+    print(b.isbn)
+    print(b.title)
+    print(b.author)
+    print(b.year)
