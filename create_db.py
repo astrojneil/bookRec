@@ -78,6 +78,15 @@ def compactBooks(book, ratings):
 
     return book, ratings
 
+def reduceRates(rates, userLimit, bookLimit):
+    count_users = rates['user_id'].value_counts()
+    count_books= rates['isbn'].value_counts()
+
+    rates = rates[rates['user_id'].isin(count_users[count_users >=userLimit].index)]
+    rates = rates[rates['isbn'].isin(count_books[count_books >=bookLimit].index)]
+
+    return rates
+
 
 def cleanData(users, books, ratings):
     #change column names
@@ -104,11 +113,15 @@ def cleanData(users, books, ratings):
     ratings_explicit = ratings_allbooks[ratings_allbooks["rate"] != 0]
 
     #remove duplicates if users read multiple versions of the same book
-    ratings_implicit.drop_duplicates(subset=['ISBN', 'User-ID'], inplace=True)
-    ratings_explicit.drop_duplicates(subset=['ISBN', 'User-ID'], inplace=True)
+    ratings_implicit.drop_duplicates(subset=['isbn', 'user_id'], inplace=True)
+    ratings_explicit.drop_duplicates(subset=['isbn', 'user_id'], inplace=True)
 
     #set implicit ratings to 1, so that read = 1, unread = 0 later
     ratings_implicit["rate"] = np.ones(len(ratings_implicit['rate']))
+
+    #remove books and users with low number of reviews
+    ratings_implicit = reduceRates(ratings_implicit, 100, 50)
+    ratings_explicit = reduceRates(ratings_explicit, 100, 50)
 
     return users, books, ratings_implicit, ratings_explicit
 
