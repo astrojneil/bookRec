@@ -89,6 +89,7 @@ def recommendbook(user):
     knn_model.fit(ratings_matrix)
 
     user_loc = ratings_matrix.index.get_loc(user.id)
+    user_books = user.rates #dictionary of books created; turn this into a vector by looking up isbns in matrix
     #change this to use user functions to get user id and list of ratings
     #so that this can work with a user that's not already in the table?
     user_vec = ratings_matrix.iloc[user_loc, :].values.reshape(1, -1)

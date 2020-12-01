@@ -19,7 +19,6 @@ class User:
         if cursor.fetchone() is not None:
             self.age = cursor.fetchone()
 
-
         #get books read and ratings
         cursor.execute('SELECT isbn FROM reviewImp WHERE user_id = ?', (id,))
         booklist = cursor.fetchall()
@@ -33,6 +32,7 @@ class User:
                 self.rates[rate[0]] = rate[1]
 
         conn.close()
+        return self
 
 
     def makeUser(self,age = None, books= [], rates= {}):
@@ -81,7 +81,7 @@ class User:
         cursor.execute('DELETE FROM reviewImp WHERE reviewImp.user_id = ?', (id,))
         cursor.execute('DELETE FROM reviewExp WHERE reviewExp.user_id = ?', (id,))
         conn.commit()
-        
+
         print('User {} deleted'.format(id))
         conn.close()
 
@@ -121,6 +121,9 @@ class User:
         conn.commit()
         conn.close()
 
+    #def recommendBook(self):
+
+
 
 #recommend books for this user ** big one! will need to call functions for actual recommender
 
@@ -128,11 +131,15 @@ class User:
 if __name__ == '__main__':
 
     u = User()
+    u2 = User()
     u1 = u.makeUser(age= 34, rates = {'0195153448':3})
     print(u1.rates)
     u1.addBooks(books = ['0195153448', '0155061224'])
     u1.addRates(rates =  {'0155061224':6})
     print(u1.rates)
     print(u1.books)
+
+    u2.getUser(2)
+    print(u2.books)
 
     u1.deleteUser()
