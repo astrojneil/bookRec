@@ -43,7 +43,58 @@ def predict_rating_explicit(user_loc, item_loc, sim_user_ind, sims, matrix):
     return prediction
 
 
+#find the most likely to be read over all books
+def recommendbook(user):
+    #read in review table
+    ratings_matrix = makeMatrix(getReviewTable())
+    rateType = 'exp'
+
+    if rateType != 'imp' and rateType != 'exp':
+        print('Unknown rating type!')
+        return
+
+    knn_model = NearestNeighbors(metric = 'cosine', algorithm = 'brute')
+    knn_model.fit(ratings_matrix)
+
+    #change this to use user functions to get user id and list of ratings
+    #so that this can work with a user that's not already in the table?
+    user_loc = ratings_matrix.index.get_loc(user_id)
+    user_vec = ratings_matrix.iloc[user_loc, :].values.reshape(1, -1)
+
+    #find similar users
+    dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 10)
+
+    #ignore the first item, it is the original user
+    sims = 1-dist.flatten()[1:] #most similar is closest to 1
+    sim_user_ind = indices.flatten()[1:]
+    print(sims)
+
+    #list books similar users have read
+    simUserBooks, bookValues = findBooks(sim_user_ind, ratings_matrix)
+
+    predictions = []
+    for i, book in enumerate(simUserBooks):
+        item_loc = ratings_matrix.columns.get_loc(book)
+        if (ratings_matrix.iloc[user_loc, item_loc] == 0):
+            if rateType == 'imp':
+                predictions.append((predict_rating_implicit(user_loc, item_loc, sim_user_ind, sims, bookValues[i], ratings_matrix), book))
+            else:
+                predictions.append((predict_rating_explicit(user_loc, item_loc, sim_user_ind, sims, ratings_matrix), book))
+        else:
+            predictions.append((-1, book)) #already read
+
+    predictions = pd.Series(predictions)
+    predictions = predictions.sort_values(ascending=False)
+    recommend = predictions[:10]
+
+    for i, (rate, book) in enumerate(recommend):
+        bookTitle = findTitle(book)
+        print("{} {} (expected rating {:0.2f})".format(i+1, bookTitle, rate))
+
+    return recommend
+
+
 if __name__ == '__main__':
     r = getReviewTable()
-    #m = makeMatrix(r)
-    print(r.shape)
+    m = makeMatrix(r)
+    print(m.head(10))
