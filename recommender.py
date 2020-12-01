@@ -4,6 +4,9 @@ import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 from scipy.spatial.distance import correlation, cosine
 import random
+import numpy as np
+from users import User
+from books import Book
 
 #function to retrieve reviews from sql table
 def getReviewTable():
@@ -18,7 +21,7 @@ def makeMatrix(rates):
     rates = rates.pivot(index='user_id', columns='isbn', values='rate')
     rates = rates.where(pd.notnull(rates), 0)
     print('Matrix shape {}'.format(rates.shape))
-    return ratess
+    return rates
 
 #find the mean rating for a given user, only looking at book which they've rated
 def calcMean(user_loc, ratings_matrix):
@@ -42,6 +45,35 @@ def predict_rating_explicit(user_loc, item_loc, sim_user_ind, sims, matrix):
     prediction = (rate_sum/sim_sum)
     return prediction
 
+#predict rating for a specific item/user
+def predict_rating_implicit(user_loc, item_loc, sim_user_ind, sims, bookvalue, matrix):
+    mean_rating_user = calcMean(user_loc, matrix)
+    sim_sum = np.sum(sims)
+    rate_sum = 0
+    #loop through similar users
+    for i, sim_user in enumerate(sim_user_ind):
+        product= matrix.iloc[sim_user, item_loc]*sims[i]  #weight rating by similarity
+        rate_sum=rate_sum+product
+
+    prediction = (rate_sum/sim_sum)
+    return prediction
+
+def findBooks(user_inds, ratings_matrix):
+    books = np.zeros(ratings_matrix.iloc[0, :].values.shape)
+    for ids in user_inds:
+        user_vec = ratings_matrix.iloc[ids, :].values
+        books = books + user_vec
+
+    books = pd.Series(books)
+    books = books.sort_values(ascending=False)
+    top100 = books[:100]
+    bookIds = []
+    bookValues = []
+    for i, ind in enumerate(top100.index):
+        bookIds.append(ratings_matrix.columns[ind])
+        bookValues.append(top100.values[i])
+    return bookIds, bookValues
+
 
 #find the most likely to be read over all books
 def recommendbook(user):
@@ -56,9 +88,9 @@ def recommendbook(user):
     knn_model = NearestNeighbors(metric = 'cosine', algorithm = 'brute')
     knn_model.fit(ratings_matrix)
 
+    user_loc = ratings_matrix.index.get_loc(user.id)
     #change this to use user functions to get user id and list of ratings
     #so that this can work with a user that's not already in the table?
-    user_loc = ratings_matrix.index.get_loc(user_id)
     user_vec = ratings_matrix.iloc[user_loc, :].values.reshape(1, -1)
 
     #find similar users
@@ -87,14 +119,16 @@ def recommendbook(user):
     predictions = predictions.sort_values(ascending=False)
     recommend = predictions[:10]
 
-    for i, (rate, book) in enumerate(recommend):
-        bookTitle = findTitle(book)
-        print("{} {} (expected rating {:0.2f})".format(i+1, bookTitle, rate))
+    for i, (rate, isbn) in enumerate(recommend):
+        book = Book()
+        book.isbn_to_book(isbn)
+        print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
 
     return recommend
 
 
 if __name__ == '__main__':
-    r = getReviewTable()
-    m = makeMatrix(r)
-    print(m.head(10))
+    user1 = User()
+    user1.getUser(11676)
+
+    recommendbook(user1)
