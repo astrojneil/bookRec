@@ -13,7 +13,7 @@ def getReviewTable(rateType, user):
     conn = sqlite3.connect("bookreviews.db")
 
     if rateType == 'exp':
-        execute_string = 'SELECT isbn, user_id, rate FROM reviewExp WHERE ( '
+        execute_string = 'SELECT isbn, user_id, rate FROM reviewExp WHERE user_id IN (SELECT DISTINCT user_id FROM reviewExp WHERE ( '
         booklist = []
         for i, isbn in enumerate(user.rates):
             if i == 0:
@@ -21,12 +21,11 @@ def getReviewTable(rateType, user):
             else:
                 execute_string = execute_string+'OR isbn = ? '
             booklist.append(isbn)
-        execute_string = execute_string+')'
+        execute_string = execute_string+'))'
 
         reviews = pd.read_sql(execute_string, conn, params=booklist)
         #reviews = pd.read_sql('SELECT isbn, user_id, rate FROM reviewExp', conn)
     else:
-        #execute_string = 'SELECT isbn, user_id, rate FROM reviewImp WHERE ( '
         execute_string = 'SELECT isbn, user_id, rate FROM reviewImp WHERE user_id IN (SELECT DISTINCT user_id FROM reviewImp WHERE ( '
         booklist = []
         for i, isbn in enumerate(user.books):
@@ -104,7 +103,7 @@ def findBooks(user_inds, ratings_matrix):
 
 #find the most likely to be read over all books
 def recommendbook(user):
-    rateType = 'imp'
+    rateType = 'exp'
     if rateType != 'imp' and rateType != 'exp':
         print('Unknown rating type!')
         return
@@ -114,10 +113,6 @@ def recommendbook(user):
 
     user_loc = ratings_matrix.index.get_loc(user.id)
     user_books = user.rates #dictionary of books created; turn this into a vector by looking up isbns in matrix
-
-    if rateType != 'imp' and rateType != 'exp':
-        print('Unknown rating type!')
-        return
 
     knn_model = NearestNeighbors(metric = 'cosine', algorithm = 'brute')
     knn_model.fit(ratings_matrix)
