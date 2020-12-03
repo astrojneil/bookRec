@@ -1,5 +1,5 @@
 import sqlite3
-
+from recommender import *
 
 class User:
     def __init__(self):
@@ -121,7 +121,8 @@ class User:
         conn.commit()
         conn.close()
 
-    #def recommendBook(self):
+    def recommend(self):
+        recommendbook(self)
 
 
 
@@ -138,6 +139,7 @@ if __name__ == '__main__':
     u1.addRates(rates =  {'0155061224':6})
     print(u1.rates)
     print(u1.books)
+    u1.recommend()
 
     u2.getUser(2)
     print(u2.books)

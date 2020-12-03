@@ -26,7 +26,8 @@ def getReviewTable(rateType, user):
         reviews = pd.read_sql(execute_string, conn, params=booklist)
         #reviews = pd.read_sql('SELECT isbn, user_id, rate FROM reviewExp', conn)
     else:
-        execute_string = 'SELECT isbn, user_id, rate FROM reviewImp WHERE ( '
+        #execute_string = 'SELECT isbn, user_id, rate FROM reviewImp WHERE ( '
+        execute_string = 'SELECT isbn, user_id, rate FROM reviewImp WHERE user_id IN (SELECT DISTINCT user_id FROM reviewImp WHERE ( '
         booklist = []
         for i, isbn in enumerate(user.books):
             if i == 0:
@@ -34,10 +35,11 @@ def getReviewTable(rateType, user):
             else:
                 execute_string = execute_string+'OR isbn = ? '
             booklist.append(isbn)
-        execute_string = execute_string+')'
+        execute_string = execute_string+'))'
 
         #reviews = pd.read_sql(execute_string, conn, params=booklist)
         reviews = pd.read_sql('SELECT isbn, user_id, rate FROM reviewImp', conn)
+        #reviews = pd.read_sql(execute_string, conn, params = booklist)
     conn.close()
     return reviews
 
