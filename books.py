@@ -73,35 +73,3 @@ class Book:
         self.year = b[4]
 
         conn.close()
-
-
-
-if __name__ == '__main__':
-    b = Book()
-    b.isbn_to_book('0155061224')
-    print(b.id)
-    print(b.isbn)
-    print(b.title)
-    print(b.author)
-    print(b.year)
-
-    b.id_to_book(225817)
-    print(b.id)
-    print(b.isbn)
-    print(b.title)
-    print(b.author)
-    print(b.year)
-
-    b.title_to_book('Carnival of the Spirit')
-    print(b.id)
-    print(b.isbn)
-    print(b.title)
-    print(b.author)
-    print(b.year)
-
-    conn = sqlite3.connect("bookreviews.db")
-    cursor = conn.cursor()
-
-    cursor.execute('SELECT isbn FROM book LIMIT 10')
-    b = cursor.fetchall()
-    print(b)

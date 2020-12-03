@@ -5,8 +5,7 @@ from sklearn.neighbors import NearestNeighbors
 from scipy.spatial.distance import correlation, cosine
 import random
 import numpy as np
-from users import User
-from books import Book
+
 
 #function to retrieve reviews from sql table
 def getReviewTable(rateType, user):
@@ -146,16 +145,4 @@ def recommendbook(user):
     predictions = predictions.sort_values(ascending=False)
     recommend = predictions[:10]
 
-    for i, (rate, isbn) in enumerate(recommend):
-        book = Book()
-        book.isbn_to_book(isbn)
-        print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
-
     return recommend
-
-
-if __name__ == '__main__':
-    user1 = User()
-    user1.getUser(11676)
-
-    recommendbook(user1)
