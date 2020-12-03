@@ -19,7 +19,6 @@ class Book:
 
         cursor.execute('SELECT * FROM book WHERE  book.isbn = ?', (isbn,))
         b = cursor.fetchone()
-        print(b)
         self.id = b[0]
         self.title = b[2]
         self.author = b[3]
@@ -99,3 +98,10 @@ if __name__ == '__main__':
     print(b.title)
     print(b.author)
     print(b.year)
+
+    conn = sqlite3.connect("bookreviews.db")
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT isbn FROM book LIMIT 10')
+    b = cursor.fetchall()
+    print(b)

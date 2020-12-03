@@ -37,9 +37,8 @@ def getReviewTable(rateType, user):
             booklist.append(isbn)
         execute_string = execute_string+'))'
 
-        #reviews = pd.read_sql(execute_string, conn, params=booklist)
-        reviews = pd.read_sql('SELECT isbn, user_id, rate FROM reviewImp', conn)
-        #reviews = pd.read_sql(execute_string, conn, params = booklist)
+        reviews = pd.read_sql(execute_string, conn, params=booklist)
+        #reviews = pd.read_sql('SELECT isbn, user_id, rate FROM reviewImp', conn)
     conn.close()
     return reviews
 

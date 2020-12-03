@@ -133,15 +133,24 @@ if __name__ == '__main__':
 
     u = User()
     u2 = User()
+    u3 = User()
     u1 = u.makeUser(age= 34, rates = {'0195153448':3})
-    print(u1.rates)
-    u1.addBooks(books = ['0195153448', '0155061224'])
+    u1.addBooks(books = ['0195153448','0002005018','0060973129','0374157065','0393045218','0399135782','0425176428','0671870432','0679425608','074322678X'])
     u1.addRates(rates =  {'0155061224':6})
     print(u1.rates)
     print(u1.books)
     u1.recommend()
-
-    u2.getUser(2)
-    print(u2.books)
-
     u1.deleteUser()
+
+    u2.getUser(2033)
+    print(u2.rates)
+
+    u3.getUser(254)
+    print(u3.books)
+
+    conn = sqlite3.connect("bookreviews.db")
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT DISTINCT user_id FROM reviewImp LIMIT 10')
+    b = cursor.fetchall()
+    print(b)
