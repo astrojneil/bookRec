@@ -3,14 +3,17 @@ from books import Book
 from recommender import *
 
 #print values from DATABASE
-'''
+
 conn = sqlite3.connect("bookreviews.db")
 cursor = conn.cursor()
 
-cursor.execute('SELECT isbn FROM book LIMIT 10')
+#cursor.execute('CREATE TABLE appUser (id INTEGER PRIMARY KEY AUTOINCREMENT, username, TEXT UNIQUE NOT NULL, password TEXT NOT NULL, tableid INTEGER, FOREIGN KEY (tableid) REFERENCES user (id))')
+#conn.commit()
+#conn.close()
+cursor.execute('SELECT * FROM appUser')
 b = cursor.fetchall()
 print(b)
-'''
+
 
 #book tests
 '''
@@ -38,6 +41,10 @@ print(b.year)
 '''
 
 #user tests
+u = User()
+u.makeUser()
+u.deleteUser()
+
 '''
 u = User()
 u2 = User()
@@ -64,6 +71,7 @@ print(b)
 '''
 
 #recommender tests
+'''
 user1 = User()
 user1.getUser(11676)
 
@@ -73,3 +81,4 @@ for i, (rate, isbn) in enumerate(rec):
     book = Book()
     book.isbn_to_book(isbn)
     print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
+'''

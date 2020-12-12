@@ -23,8 +23,8 @@ def create_app(test_config=None):
     db.init_app(app)
 
     #register the auth Blueprint
-    #from . import auth
-    #app.register_blueprint(auth.bp)
+    from . import auth
+    app.register_blueprint(auth.bp)
 
     #register blog blueprint
     #from . import blog
