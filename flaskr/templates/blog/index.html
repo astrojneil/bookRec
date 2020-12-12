@@ -1,39 +1,48 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Book Recommendations{% endblock %}</h1>
+  <h1>{% block title %}Recommendations{% endblock %}</h1>
   {% if g.user %}
-    <a class="action" href="{{ url_for('blog.addbooks') }}">Add Read Books</a>
+    <a class="action" href="{{ url_for('blog.addbooks') }}">Add Books Read</a>
   {% endif %}
 {% endblock %}
 
 {% block content %}
-  {% for book in books %}
-    <article class="post">
-      <header>
-        <div>
-          <h3>{{ book['title'] }}<div> by {{book['author']}} </div></h3>
-          <div class="about">Rating: {{ book['rate'] }}</div>
-        </div>
-      </header>
-    </article>
-    {% if not loop.last %}
-      <hr>
-    {% endif %}
-  {% endfor %}
+  {% if books %}
+    {% for book in books %}
+      <article class="post">
+        <header>
+          <div>
+            <h3>{{ book['title'] }}<div> by {{book['author']}} </div></h3>
+            <div class="about">Rating: {{ book['rate'] }}</div>
+          </div>
+        </header>
+      </article>
+      {% if not loop.last %}
+        <hr>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <h3>  Can't recommend books!</h3>
+    <div>Try adding books to read books </div>
+  {% endif %}
 
   <h1> Books You've Read </h1>
-  {% for post in posts %}
-    <article class="post">
-      <header>
-        <div>
-          <h3>{{ post['title'] }}<div> by {{post['author']}} </div></h3>
-          <div class="about">Rating: {{ post['rate'] }}</div>
-        </div>
-      </header>
-    </article>
-    {% if not loop.last %}
-      <hr>
-    {% endif %}
-  {% endfor %}
+  {% if posts %}
+    {% for post in posts %}
+      <article class="post">
+        <header>
+          <div>
+            <h3>{{ post['title'] }}<div> by {{post['author']}} </div></h3>
+            <div class="about">Rating: {{ post['rate'] }}</div>
+          </div>
+        </header>
+      </article>
+      {% if not loop.last %}
+        <hr>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <h3> No books added to read books </h3>
+  {% endif %}
 {% endblock %}

@@ -17,25 +17,33 @@ bp = Blueprint('blog', __name__)
 def index():
     db = get_db()
 
+    #test if this user has any books listed yet, if no display:
+
     #find books for this user
     posts = db.execute(
-        " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
+    " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
 
-    #get this user, recommend books
-    u = User()
-    u.getUser(g.user['tableid'], db)
-    rec = recommendbook(u, db)
 
-    #construct list of recommended books
-    bookList = []
-    for i, (rate, isbn) in enumerate(rec):
-        book = Book()
-        book.isbn_to_book(isbn, db)
-        bookinfo = {}
-        bookinfo['title'] = book.title
-        bookinfo['author'] = book.author
-        bookinfo['rate'] = "{:0.2f}".format(rate)
-        bookList.append(bookinfo)
+    if not posts:
+        bookList = [] #[{'title': 'Cannot Recommend books, try adding books to "Books Read"', 'author':'', 'rate':''}]
+        #posts = [{'title': 'No books read! Try adding books to "Books Read"', 'author':'', 'rate':''}]
+
+    else:
+        #get this user, recommend books
+        u = User()
+        u.getUser(g.user['tableid'], db)
+        rec = recommendbook(u, db)
+
+        #construct list of recommended books
+        bookList = []
+        for i, (rate, isbn) in enumerate(rec):
+            book = Book()
+            book.isbn_to_book(isbn, db)
+            bookinfo = {}
+            bookinfo['title'] = book.title
+            bookinfo['author'] = book.author
+            bookinfo['rate'] = "{:0.1f}".format(rate)
+            bookList.append(bookinfo)
 
     return render_template('blog/index.html', posts=posts, books=bookList)
 
