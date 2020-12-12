@@ -44,7 +44,6 @@ def getReviewTable(rateType, user, conn):
 def makeMatrix(rates):
     rates = rates.pivot(index='user_id', columns='isbn', values='rate')
     rates = rates.where(pd.notnull(rates), 0)
-    print('Matrix shape {}'.format(rates.shape))
     return rates
 
 #find the mean rating for a given user, only looking at book which they've rated
