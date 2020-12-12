@@ -7,12 +7,19 @@ from recommender import *
 conn = sqlite3.connect("bookreviews.db")
 cursor = conn.cursor()
 
-#cursor.execute('CREATE TABLE appUser (id INTEGER PRIMARY KEY AUTOINCREMENT, username, TEXT UNIQUE NOT NULL, password TEXT NOT NULL, tableid INTEGER, FOREIGN KEY (tableid) REFERENCES user (id))')
+#cursor.execute("""DROP TABLE IF EXISTS appUser;""")
+#cursor.execute("""CREATE TABLE appUser (
+#    id INTEGER PRIMARY KEY AUTOINCREMENT,
+#    username TEXT UNIQUE NOT NULL,
+#    password TEXT NOT NULL,
+#    tableid INTEGER,
+#    FOREIGN KEY (tableid) REFERENCES user (id))""")
 #conn.commit()
 #conn.close()
-cursor.execute('SELECT * FROM appUser')
-b = cursor.fetchall()
-print(b)
+
+#cursor.execute('SELECT * FROM appUser')
+#b = cursor.fetchall()
+#print(b)
 
 
 #book tests
@@ -41,9 +48,9 @@ print(b.year)
 '''
 
 #user tests
-u = User()
-u.makeUser()
-u.deleteUser()
+#u = User()
+#u.getUser(278855)
+#u.deleteUser()
 
 '''
 u = User()
