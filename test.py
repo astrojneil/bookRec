@@ -4,7 +4,7 @@ from recommender import *
 
 #print values from DATABASE
 
-conn = sqlite3.connect("bookreviews.db")
+conn = sqlite3.connect("instance/bookreviews.db")
 cursor = conn.cursor()
 
 #cursor.execute("""DROP TABLE IF EXISTS appUser;""")
@@ -75,14 +75,13 @@ print(b)
 '''
 
 #recommender tests
-'''
-user1 = User()
-user1.getUser(11676)
 
-rec = recommendbook(user1)
+user1 = User()
+user1.getUser(11676, conn)
+
+rec = recommendbook(user1, conn)
 
 for i, (rate, isbn) in enumerate(rec):
     book = Book()
-    book.isbn_to_book(isbn)
+    book.isbn_to_book(isbn, conn)
     print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
-'''

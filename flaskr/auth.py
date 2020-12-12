@@ -31,7 +31,7 @@ def register():
 
         if error is None:
             u = User()
-            u.makeUser()
+            u.makeUser(db)
             db.execute(
             'INSERT INTO appUser (username, password, tableid) VALUES (?, ?, ?)', (username, generate_password_hash(password), u.id)
             )

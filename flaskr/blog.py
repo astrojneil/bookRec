@@ -7,6 +7,7 @@ from flaskr.auth import login_required
 from flaskr.db import get_db
 from users import User
 from books import Book
+from recommender import *
 
 
 #without a url_prefix, each of these functions will have their own url
@@ -18,8 +19,28 @@ def index():
     print(g.user['tableid'])
     #find books for this user
     posts = db.execute(
-        " SELECT title, author FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
-    return render_template('blog/index.html', posts=posts)
+        " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
+    print(posts[0]['title'])
+
+    u = User()
+    u.getUser(g.user['tableid'], db)
+    rec = recommendbook(u, db)
+
+    bookList = []
+    for i, (rate, isbn) in enumerate(rec):
+        book = Book()
+        book.isbn_to_book(isbn, db)
+        bookinfo = {}
+        bookinfo['title'] = book.title
+        bookinfo['author'] = book.author
+        bookinfo['rate'] = "{:0.2f}".format(rate)
+        bookList.append(bookinfo)
+
+        #print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
+
+    #books = db.execute(
+    #    " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = 11676").fetchall()
+    return render_template('blog/index.html', posts=posts, books=bookList)
 
 @bp.route('/addbook', methods = ('GET', 'POST'))
 @login_required
@@ -46,7 +67,6 @@ def addbooks():
             u = User()
             u.getUser(g.user['tableid'], db)
             u.addRates({b.isbn: rate}, db)
-            print(u.rates)
 
             db.commit()
             return redirect(url_for('blog.index'))
