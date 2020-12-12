@@ -142,6 +142,6 @@ def recommendbook(user, conn):
 
     predictions = pd.Series(predictions)
     predictions = predictions.sort_values(ascending=False)
-    recommend = predictions[:10]
+    recommend = predictions[:5]
 
     return recommend

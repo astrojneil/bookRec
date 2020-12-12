@@ -14,7 +14,8 @@
         <header>
           <div>
             <h3>{{ book['title'] }}<div> by {{book['author']}} </div></h3>
-            <div class="about">Rating: {{ book['rate'] }}</div>
+            <div class="about">Expected Rating: {{ book['rate'] }} </div>
+            <div><a class="action" href="{{ url_for('blog.addbookrec', title=book['title']) }}">Mark as Read</a></div>
           </div>
         </header>
       </article>
