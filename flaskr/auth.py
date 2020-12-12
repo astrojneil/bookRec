@@ -83,7 +83,7 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('auth'))
 
 #decorator for when user accesses a page that requires a login
 def login_required(view):
