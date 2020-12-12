@@ -17,17 +17,13 @@ bp = Blueprint('blog', __name__)
 def index():
     db = get_db()
 
-    #test if this user has any books listed yet, if no display:
-
     #find books for this user
     posts = db.execute(
     " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
 
-
+    #if no books to display as read, don't try to recommend
     if not posts:
-        bookList = [] #[{'title': 'Cannot Recommend books, try adding books to "Books Read"', 'author':'', 'rate':''}]
-        #posts = [{'title': 'No books read! Try adding books to "Books Read"', 'author':'', 'rate':''}]
-
+        bookList = []
     else:
         #get this user, recommend books
         u = User()
