@@ -5,9 +5,8 @@
 {% endblock %}
 
 {% block content %}
+  <h1> {{booktitle}} </h1>
   <form method="post">
-    <label for="title">Title</label>
-    <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="rate">Rate (1-10)</label>
     <input name="rate" id="rate">{{ request.form['rate'] }}</input>
     <input type="submit" value="Save">
