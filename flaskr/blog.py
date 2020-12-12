@@ -16,16 +16,17 @@ bp = Blueprint('blog', __name__)
 @bp.route('/')
 def index():
     db = get_db()
-    print(g.user['tableid'])
+
     #find books for this user
     posts = db.execute(
         " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
-    print(posts[0]['title'])
 
+    #get this user, recommend books
     u = User()
     u.getUser(g.user['tableid'], db)
     rec = recommendbook(u, db)
 
+    #construct list of recommended books
     bookList = []
     for i, (rate, isbn) in enumerate(rec):
         book = Book()
@@ -36,10 +37,6 @@ def index():
         bookinfo['rate'] = "{:0.2f}".format(rate)
         bookList.append(bookinfo)
 
-        #print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
-
-    #books = db.execute(
-    #    " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = 11676").fetchall()
     return render_template('blog/index.html', posts=posts, books=bookList)
 
 @bp.route('/addbook', methods = ('GET', 'POST'))
