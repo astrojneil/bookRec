@@ -39,17 +39,15 @@ def addbooks():
             flash(error)
         else:
             db = get_db()
-            b = Book(db)
-            b.title_to_book()
+            b = Book()
+            b.title_to_book(title, db)
             #handle book not found?
 
             u = User()
-            u.getuser(g.user['tableid'])
-            u.addbooks({b.isbn, rate})
+            u.getUser(g.user['tableid'], db)
+            u.addRates({b.isbn: rate}, db)
+            print(u.rates)
 
-            db.execute(
-            'INSERT INTO  (title, body, author_id) VALUES (?, ?, ?)', (title, body, g.user['id'])
-            )
             db.commit()
             return redirect(url_for('blog.index'))
 
