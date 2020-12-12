@@ -12,9 +12,9 @@ class Book:
         self.year = ''
 
     #find a book by isbn
-    def isbn_to_book(self, isbn):
+    def isbn_to_book(self, isbn, conn):
         self.isbn = isbn
-        conn = sqlite3.connect("bookreviews.db")
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         cursor.execute('SELECT * FROM book WHERE  book.isbn = ?', (isbn,))
@@ -24,12 +24,12 @@ class Book:
         self.author = b[3]
         self.year = b[4]
 
-        conn.close()
+        #conn.close()
 
     #find a book by id
-    def id_to_book(self, id):
+    def id_to_book(self, id, conn):
         self.id = id
-        conn = sqlite3.connect("bookreviews.db")
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         cursor.execute('SELECT * FROM book WHERE  book.id = ?', (id,))
@@ -40,16 +40,16 @@ class Book:
         self.author = b[3]
         self.year = b[4]
 
-        conn.close()
+        #conn.close()
 
-    def title_to_book(self, title):
+    def title_to_book(self, title, conn):
         #parse title to core words
         stop_words = set(stopwords.words('english'))
         words = word_tokenize(title.lower())
 
         filtered_title = [w for w in words if not w in stop_words]
 
-        conn = sqlite3.connect("bookreviews.db")
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         #create the sql command to find where title contains these words
@@ -72,4 +72,4 @@ class Book:
         self.author = b[3]
         self.year = b[4]
 
-        conn.close()
+        #conn.close()

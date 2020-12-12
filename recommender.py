@@ -8,8 +8,8 @@ import numpy as np
 
 
 #function to retrieve reviews from sql table
-def getReviewTable(rateType, user):
-    conn = sqlite3.connect("bookreviews.db")
+def getReviewTable(rateType, user, conn):
+    #conn = sqlite3.connect("bookreviews.db")
 
     if rateType == 'exp':
         execute_string = 'SELECT isbn, user_id, rate FROM reviewExp WHERE user_id IN (SELECT DISTINCT user_id FROM reviewExp WHERE ( '
@@ -101,14 +101,14 @@ def findBooks(user_inds, ratings_matrix):
 
 
 #find the most likely to be read over all books
-def recommendbook(user):
+def recommendbook(user, conn):
     rateType = 'exp'
     if rateType != 'imp' and rateType != 'exp':
         print('Unknown rating type!')
         return
 
     #read in review table
-    ratings_matrix = makeMatrix(getReviewTable(rateType, user))
+    ratings_matrix = makeMatrix(getReviewTable(rateType, user, conn))
 
     user_loc = ratings_matrix.index.get_loc(user.id)
     user_books = user.rates #dictionary of books created; turn this into a vector by looking up isbns in matrix

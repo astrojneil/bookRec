@@ -8,10 +8,10 @@ class User:
         self.books = [] #list of isbns
         self.rates = {} #dict with isbn:rate
 
-    def getUser(self, id):
+    def getUser(self, id, conn):
         self.id = id
         #connect to database
-        conn = sqlite3.connect("bookreviews.db")
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         #get age
@@ -31,13 +31,13 @@ class User:
             for rate in ratelist:
                 self.rates[rate[0]] = rate[1]
 
-        conn.close()
+        #conn.close()
         return self
 
 
-    def makeUser(self,age = None, books= [], rates= {}):
+    def makeUser(self, conn, age = None, books= [], rates= {}):
 
-        conn = sqlite3.connect("bookreviews.db")
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         cursor.execute('SELECT MAX(user.id) FROM user')
@@ -69,12 +69,12 @@ class User:
                 self.rates[book] = rates[book]
 
         conn.commit()
-        conn.close()
+        #conn.close()
         return self
 
-    def deleteUser(self):
+    def deleteUser(self, conn):
         id = self.id
-        conn = sqlite3.connect("bookreviews.db")
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         cursor.execute('DELETE FROM user WHERE user.id = ?', (id,))
@@ -83,10 +83,10 @@ class User:
         conn.commit()
 
         print('User {} deleted'.format(id))
-        conn.close()
+        #conn.close()
 
-    def deleteUser_id(self, id):
-        conn = sqlite3.connect("bookreviews.db")
+    def deleteUser_id(self, id, conn):
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         cursor.execute('DELETE FROM user WHERE user.id = ?', (id,))
@@ -95,10 +95,10 @@ class User:
         conn.commit()
 
         print('User {} deleted'.format(id))
-        conn.close()
+        #conn.close()
 
-    def addBooks(self, books):
-        conn = sqlite3.connect("bookreviews.db")
+    def addBooks(self, books, conn):
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
         for book in books:
             #add book to db
@@ -106,10 +106,10 @@ class User:
             #add books to object
             self.books.append(book)
         conn.commit()
-        conn.close()
+        #conn.close()
 
-    def addRates(self, rates):
-        conn = sqlite3.connect("bookreviews.db")
+    def addRates(self, rates, conn):
+        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         for i, book in enumerate(rates):
@@ -119,7 +119,7 @@ class User:
             self.rates[book] = rates[book]
 
         conn.commit()
-        conn.close()
+        #conn.close()
 
-    def recommend(self):
-        recommendbook(self)
+    def recommend(self, conn):
+        recommendbook(self, conn)

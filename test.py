@@ -8,15 +8,12 @@ conn = sqlite3.connect("bookreviews.db")
 cursor = conn.cursor()
 
 #cursor.execute("""DROP TABLE IF EXISTS appUser;""")
-#cursor.execute("""CREATE TABLE appUser (
-#    id INTEGER PRIMARY KEY AUTOINCREMENT,
-#    username TEXT UNIQUE NOT NULL,
-#    password TEXT NOT NULL,
-#    tableid INTEGER,
-#    FOREIGN KEY (tableid) REFERENCES user (id))""")
+#cursor.execute(""" SELECT title, author FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = 11676""")
+#b = cursor.fetchall()
+#print(b)
+
 #conn.commit()
 #conn.close()
-
 #cursor.execute('SELECT * FROM appUser')
 #b = cursor.fetchall()
 #print(b)
@@ -49,8 +46,8 @@ print(b.year)
 
 #user tests
 #u = User()
-#u.getUser(278855)
-#u.deleteUser()
+#u.getUser(278855, conn)
+#u.deleteUser(conn)
 
 '''
 u = User()
