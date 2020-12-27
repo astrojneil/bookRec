@@ -24,6 +24,8 @@ class Book:
         self.author = b[3]
         self.year = b[4]
 
+        return self
+
         #conn.close()
 
     #find a book by id
@@ -34,11 +36,12 @@ class Book:
 
         cursor.execute('SELECT * FROM book WHERE  book.id = ?', (id,))
         b = cursor.fetchone()
-        print(b)
         self.isbn = b[1]
         self.title = b[2]
         self.author = b[3]
         self.year = b[4]
+
+        return self
 
         #conn.close()
 
@@ -72,4 +75,5 @@ class Book:
         self.author = b[3]
         self.year = b[4]
 
+        return self
         #conn.close()
