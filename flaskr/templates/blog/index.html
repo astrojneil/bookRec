@@ -25,7 +25,7 @@
     {% endfor %}
   {% else %}
     <h3>  Can't recommend books!</h3>
-    <div>Try adding books to read books </div>
+    <div>Try adding more books to read books </div>
   {% endif %}
 
   <h1> Books You've Read </h1>
@@ -36,6 +36,7 @@
           <div>
             <h3>{{ post['title'] }}<div> by {{post['author']}} </div></h3>
             <div class="about">Rating: {{ post['rate'] }}</div>
+            <div><a class="action" href="{{ url_for('blog.deleterec', title=post['title']) }}">Delete</a></div>
           </div>
         </header>
       </article>

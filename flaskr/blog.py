@@ -24,6 +24,8 @@ def index():
     #if no books to display as read, don't try to recommend
     if not posts:
         bookList = []
+    elif (len(posts) < 2):
+        bookList = []
     else:
         #get this user, recommend books
         u = User()
@@ -101,11 +103,16 @@ def addbookrec(title):
 
     return render_template('blog/addbookrec.html', booktitle=title)
 
-@bp.route('/<int:id>/delete', methods=('POST',))
+@bp.route('/<title>/', methods=('GET','POST'))
 @login_required
-def delete(id):
-    get_post(id)
+def deleterec(title):
     db = get_db()
-    db.execute('DELETE FROM post WHERE id = ?', (id,))
+    b = Book()
+    b.title_to_book(title, db)
+
+    u =  User()
+    u.getUser(g.user['tableid'], db)
+    u.deleteBook(b.isbn, db)
+
     db.commit()
     return redirect(url_for('blog.index'))

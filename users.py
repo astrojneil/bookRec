@@ -124,7 +124,6 @@ class User:
     def deleteBook(self, isbn, conn):
         #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
-
         #remove from db
         cursor.execute('DELETE FROM reviewExp WHERE (isbn = ? AND user_id = ?)', (isbn, self.id))
         cursor.execute('DELETE FROM reviewImp WHERE (isbn = ? AND user_id = ?)', (isbn, self.id))
