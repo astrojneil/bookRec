@@ -14,7 +14,7 @@ To reduce the data, I separated the ratings into implicit and explicit ratings. 
 
 The recommender system makes user of user-based collaborative filtering. For a given user, the 10 most similar users are found with through a k-neighbors algorithm. 100 possible recommendation books are found by looking at the 100 most occuring books within the 10 most similar users. The expected rating is then determined for each of the 100 possible recommendations by weighting each user's rating by their similarity to the base user. The top 10 books with the highest expected ratings are then returned as recommendations. 
 
-The base implementation of the recommender is in this jupyter notebook, and is implemented for the app in <a href = "https://github.com/astrojneil/bookRec/blob/main/recommender.py" > recommender.py </a>. 
+The base implementation of the recommender is in <a href = "https://github.com/astrojneil/bookRec/blob/main/BookRecommender.ipynb" > this jupyter notebook</a>, and is implemented for the app in <a href = "https://github.com/astrojneil/bookRec/blob/main/recommender.py" > recommender.py </a>. 
 
 ### Database
 The easiest way to store the book/rating dataset as well as the information for new users was with an sqlite database. The conversion from the original .csv files to a database is found in <a href="https://github.com/astrojneil/bookRec/blob/main/create_db.py"> create_db.py </a>. This script constructs the tables within the database as well as performs the cleaning described above.
