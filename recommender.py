@@ -89,7 +89,7 @@ def findBooks(user_inds, ratings_matrix):
 
     books = pd.Series(books)
     books = books.sort_values(ascending=False)
-    top100 = books[:100]
+    top100 = books[:len(user_inds)*15]
     bookIds = []
     bookValues = []
     for i, ind in enumerate(top100.index):
@@ -119,7 +119,7 @@ def recommendbook(user, conn):
     user_vec = ratings_matrix.iloc[user_loc, :].values.reshape(1, -1)
 
     #find similar users
-    dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 10)
+    dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 4)
 
     #ignore the first item, it is the original user
     sims = 1-dist.flatten()[1:] #most similar is closest to 1
