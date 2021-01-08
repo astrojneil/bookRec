@@ -58,8 +58,6 @@ def simpivot(rateType, user_ids, conn):
             idlist.append(uid)
         execute_string = execute_string+')'
 
-        print(execute_string)
-        print(idlist)
         reviews = pd.read_sql(execute_string, conn, params=idlist)
         #reviews = pd.read_sql('SELECT isbn, user_id, rate FROM reviewExp', conn)
     else:
@@ -195,7 +193,7 @@ def recommendbook(user, conn):
     user_vec = ratings_matrix.iloc[user_loc, :].values.reshape(1, -1)
 
     #find similar users
-    dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 4)
+    dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 8)
 
     #ignore the first item, it is the original user
     sims = 1-dist.flatten() #most similar is closest to 1
@@ -248,13 +246,13 @@ def recommendbook(user, conn):
     X = theta[:num_books*num_features].reshape(num_books, num_features)
     Theta = theta[num_books*num_features:].reshape(num_users, num_features)
 
-    print('Recommender system learning completed.')
+    #print('Recommender system learning completed.')
     p = np.dot(X, Theta.T)
     R_inv = np.where((R==0), 1, 0)
 
     my_predictions = p[:, 0] + Ymean
     #find books that have not been read
-    recs = np.multiply(my_predictions, R[:, 0])
+    recs = np.multiply(my_predictions, R_inv[:, 0])
 
     predictions = []
     for i, rate in enumerate(recs):
@@ -263,7 +261,7 @@ def recommendbook(user, conn):
 
     predictions = pd.Series(predictions)
     predictions = predictions.sort_values(ascending=False)
-    recommend = predictions[:5]
+    recommend = predictions[:10]
 
     return recommend
 

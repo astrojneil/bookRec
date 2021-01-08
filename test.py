@@ -20,9 +20,9 @@ cursor = conn.cursor()
 
 
 #book tests
-'''
+
 b = Book()
-b.isbn_to_book('0155061224')
+'''b.isbn_to_book('0155061224')
 print(b.id)
 print(b.isbn)
 print(b.title)
@@ -36,7 +36,7 @@ print(b.title)
 print(b.author)
 print(b.year)
 
-b.title_to_book('Carnival of the Spirit')
+b.title_to_book(' Harry Potter and the Chamber of Secrets', conn)
 print(b.id)
 print(b.isbn)
 print(b.title)
@@ -45,9 +45,9 @@ print(b.year)
 '''
 
 #user tests
-u = User()
-u.getUser(278855, conn)
-u.deleteUser(conn)
+#u = User()
+#u.getUser(278861, conn)
+#u.deleteUser(conn)
 
 '''
 u = User()
@@ -65,16 +65,15 @@ print(len(u1.books))
 u1.deleteUser(conn)
 '''
 
-#u2.getUser(2033)
-#print(u2.rates)
 
-#u3.getUser(254)
-#print(u3.books)
-
+#clean up appUser tests
 '''
-conn = sqlite3.connect("bookreviews.db")
-cursor = conn.cursor()
-cursor.execute('SELECT id FROM reviewExp')
+cursor.execute('SELECT * FROM appUser')
+b = cursor.fetchall()
+print(b)
+#cursor.execute('DELETE FROM appUser WHERE (username = ?)', ('test3',))
+#conn.commit()
+cursor.execute('SELECT * FROM appUser')
 b = cursor.fetchall()
 print(b)
 '''
@@ -82,7 +81,7 @@ print(b)
 #recommender tests
 
 user1 = User()
-user1.getUser(11676, conn)
+user1.getUser(278862, conn)
 
 rec = recommendbook(user1, conn)
 

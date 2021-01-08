@@ -36,7 +36,7 @@
           <div>
             <h3>{{ post['title'] }}<div> by {{post['author']}} </div></h3>
             <div class="about">Rating: {{ post['rate'] }}</div>
-            <div><a class="action" href="{{ url_for('blog.deleterec', title=post['title']) }}">Delete</a></div>
+            <div><a class="action" href="{{ url_for('blog.deleterec', isbn=post['isbn']) }}">Delete</a></div>
           </div>
         </header>
       </article>

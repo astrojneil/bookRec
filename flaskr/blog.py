@@ -19,7 +19,7 @@ def index():
 
     #find books for this user
     posts = db.execute(
-    " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
+    " SELECT title, author, rate, b.isbn FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
 
     #if no books to display as read, don't try to recommend
     if not posts:
@@ -42,6 +42,7 @@ def index():
             bookinfo['title'] = book.title
             bookinfo['author'] = book.author
             bookinfo['rate'] = "{:0.1f}".format(rate)
+            bookinfo['isbn'] = book.isbn
             bookList.append(bookinfo)
 
     return render_template('blog/index.html', posts=posts, books=bookList)
@@ -104,16 +105,16 @@ def addbookrec(title):
 
     return render_template('blog/addbookrec.html', booktitle=title)
 
-@bp.route('/<title>/', methods=('GET','POST'))
+@bp.route('/<isbn>/deleterec', methods=('GET','POST'))
 @login_required
-def deleterec(title):
-    #db = get_db()
-    #b = Book()
-    #b.title_to_book(title, db)
+def deleterec(isbn):
+    db = get_db()
+    b = Book()
+    b.isbn_to_book(isbn, db)
 
-    #u =  User()
-    #u.getUser(g.user['tableid'], db)
-    #u.deleteBook(b.isbn, db)
+    u =  User()
+    u.getUser(g.user['tableid'], db)
+    u.deleteBook(b.isbn, db)
 
-    #db.commit()
+    db.commit()
     return redirect(url_for('blog.index'))
