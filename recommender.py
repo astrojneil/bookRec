@@ -40,6 +40,39 @@ def getReviewTable(rateType, user, conn):
     return reviews
 
 
+#function to retrieve reviews from sql table
+def simpivot(rateType, user_ids, conn):
+    #conn = sqlite3.connect("bookreviews.db")
+
+    if rateType == 'exp':
+        execute_string = 'SELECT isbn, user_id, rate FROM reviewExp WHERE ( '
+        idlist = []
+        for i, uid in enumerate(user_ids):
+            if i == 0:
+                execute_string = execute_string+'user_id = ? '
+            else:
+                execute_string = execute_string+'OR user_id = ? '
+            idlist.append(uid)
+        execute_string = execute_string+')'
+
+        reviews = pd.read_sql(execute_string, conn, params=idlist)
+        #reviews = pd.read_sql('SELECT isbn, user_id, rate FROM reviewExp', conn)
+    else:
+        execute_string = 'SELECT isbn, user_id, rate FROM reviewImp WHERE ( '
+        idlist = []
+        for i, uid in enumerate(user_ids):
+            if i == 0:
+                execute_string = execute_string+'user_id = ? '
+            else:
+                execute_string = execute_string+'OR user_id = ? '
+            idlist.append(uid)
+        execute_string = execute_string+')'
+
+        reviews = pd.read_sql(execute_string, conn, params=idist)
+        #reviews = pd.read_sql('SELECT isbn, user_id, rate FROM reviewImp', conn)
+    return makeMatrix(reviews)
+
+
 #create pivot table
 def makeMatrix(rates):
     rates = rates.pivot(index='user_id', columns='isbn', values='rate')
@@ -107,6 +140,7 @@ def recommendbook(user, conn):
 
     #read in review table
     ratings_matrix = makeMatrix(getReviewTable(rateType, user, conn))
+    print(ratings_matrix.shape)
 
     user_loc = ratings_matrix.index.get_loc(user.id)
     user_books = user.rates #dictionary of books created; turn this into a vector by looking up isbns in matrix
@@ -122,11 +156,35 @@ def recommendbook(user, conn):
     dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 4)
 
     #ignore the first item, it is the original user
-    sims = 1-dist.flatten()[1:] #most similar is closest to 1
-    sim_user_ind = indices.flatten()[1:]
+    sims = 1-dist.flatten() #most similar is closest to 1
+    sim_user_ind = indices.flatten()
 
     #list books similar users have read
     simUserBooks, bookValues = findBooks(sim_user_ind, ratings_matrix)
+
+    #return pivot table of simular users/books
+    Y = simpivot(rateType, sim_user_ind, conn)
+    R = np.where(Y != 0)
+
+    #  Normalize Ratings
+    #Ynorm, Ymean = utils.normalizeRatings(Y, R)
+
+    print(Y)
+    print(R)
+    #  Useful Values
+    num_movies, num_users = Y.shape
+    num_features = 10
+
+    # Set Initial Parameters (Theta, X)
+    X = np.random.randn(num_movies, num_features)
+    Theta = np.random.randn(num_users, num_features)
+
+    initial_parameters = np.concatenate([X.ravel(), Theta.ravel()])
+
+
+
+
+
 
     predictions = []
     for i, book in enumerate(simUserBooks):

@@ -49,7 +49,7 @@ print(b.year)
 #u.getUser(278855, conn)
 #u.deleteUser(conn)
 
-
+'''
 u = User()
 u2 = User()
 u3 = User()
@@ -63,6 +63,7 @@ print(len(u1.rates))
 print(len(u1.books))
 #u1.recommend()
 u1.deleteUser(conn)
+'''
 
 #u2.getUser(2033)
 #print(u2.rates)
@@ -73,19 +74,19 @@ u1.deleteUser(conn)
 '''
 conn = sqlite3.connect("bookreviews.db")
 cursor = conn.cursor()
-cursor.execute('SELECT * FROM reviewImp WHERE user_id = 278854')
+cursor.execute('SELECT id FROM reviewExp')
 b = cursor.fetchall()
 print(b)
 '''
 
 #recommender tests
 
-#user1 = User()
-#user1.getUser(11676, conn)
+user1 = User()
+user1.getUser(11676, conn)
 
-#rec = recommendbook(user1, conn)
+rec = recommendbook(user1, conn)
 
-#for i, (rate, isbn) in enumerate(rec):
-#    book = Book()
-#    book.isbn_to_book(isbn, conn)
-#    print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
+for i, (rate, isbn) in enumerate(rec):
+    book = Book()
+    book.isbn_to_book(isbn, conn)
+    print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
