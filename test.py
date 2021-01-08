@@ -45,9 +45,9 @@ print(b.year)
 '''
 
 #user tests
-#u = User()
-#u.getUser(278855, conn)
-#u.deleteUser(conn)
+u = User()
+u.getUser(278855, conn)
+u.deleteUser(conn)
 
 '''
 u = User()

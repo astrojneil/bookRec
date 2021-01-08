@@ -30,6 +30,7 @@ def index():
         #get this user, recommend books
         u = User()
         u.getUser(g.user['tableid'], db)
+        print(u.id)
         rec = recommendbook(u, db)
 
         #construct list of recommended books
@@ -106,13 +107,13 @@ def addbookrec(title):
 @bp.route('/<title>/', methods=('GET','POST'))
 @login_required
 def deleterec(title):
-    db = get_db()
-    b = Book()
-    b.title_to_book(title, db)
+    #db = get_db()
+    #b = Book()
+    #b.title_to_book(title, db)
 
-    u =  User()
-    u.getUser(g.user['tableid'], db)
-    u.deleteBook(b.isbn, db)
+    #u =  User()
+    #u.getUser(g.user['tableid'], db)
+    #u.deleteBook(b.isbn, db)
 
-    db.commit()
+    #db.commit()
     return redirect(url_for('blog.index'))
