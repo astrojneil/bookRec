@@ -264,17 +264,3 @@ def recommendbook(user, conn):
     recommend = predictions[:10]
 
     return recommend
-
-
-'''
-    predictions = []
-    for i, book in enumerate(simUserBooks):
-        item_loc = ratings_matrix.columns.get_loc(book)
-        if (ratings_matrix.iloc[user_loc, item_loc] == 0):
-            if rateType == 'imp':
-                predictions.append((predict_rating_implicit(user_loc, item_loc, sim_user_ind, sims, bookValues[i], ratings_matrix), book))
-            else:
-                predictions.append((predict_rating_explicit(user_loc, item_loc, sim_user_ind, sims, ratings_matrix), book))
-        else:
-            predictions.append((-1, book)) #already read
-'''

@@ -30,7 +30,6 @@ def index():
         #get this user, recommend books
         u = User()
         u.getUser(g.user['tableid'], db)
-        print(u.id)
         rec = recommendbook(u, db)
 
         #construct list of recommended books
