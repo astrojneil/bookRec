@@ -81,9 +81,9 @@ print(b)
 #recommender tests
 
 user1 = User()
-user1.getUser(278862, conn)
+user1.getUser(11676, conn)
 
-rec = recommendbook(user1, conn)
+rec = recommendbook(user1, conn, 10)
 
 for i, (rate, isbn) in enumerate(rec):
     book = Book()

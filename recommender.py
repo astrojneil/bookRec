@@ -134,12 +134,12 @@ def findBooks(user_inds, ratings_matrix):
     return bookIds, bookValues
 
 
-def cofiCostFunc(params, Y, R, num_books, num_users,
+def cofiCostFunc(params, Y, R, num_users, num_books,
                       num_features, lambda_=0.0):
 
     # Unfold the U and W matrices from params
-    X = params[:num_users*num_features].reshape(num_users, num_features)
-    Theta = params[num_users*num_features:].reshape(num_books, num_features)
+    X = params[:num_books*num_features].reshape(num_books, num_features)
+    Theta = params[num_books*num_features:].reshape(num_users, num_features)
 
     J = 0
     X_grad = np.zeros(X.shape)
@@ -193,7 +193,7 @@ def recommendbook(user, conn):
     user_vec = ratings_matrix.iloc[user_loc, :].values.reshape(1, -1)
 
     #find similar users
-    dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 8)
+    dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 10)
 
     #ignore the first item, it is the original user
     sims = 1-dist.flatten() #most similar is closest to 1
@@ -221,7 +221,7 @@ def recommendbook(user, conn):
 
     #  Useful Values
     num_books, num_users= Y.shape
-    num_features = 10
+    num_features = 2
 
     # Set Initial Parameters (Theta, X)
     X = np.random.randn(num_books, num_features)
@@ -234,6 +234,8 @@ def recommendbook(user, conn):
 
     # Set Regularization
     lambda_ = 10
+
+
     res = optimize.minimize(lambda x: cofiCostFunc(x, Ynorm, R, num_users,
                                                num_books, num_features, lambda_),
                         initial_parameters,
