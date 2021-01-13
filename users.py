@@ -11,7 +11,6 @@ class User:
     def getUser(self, id, conn):
         self.id = id
         #connect to database
-        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         #get age
@@ -31,13 +30,11 @@ class User:
             for rate in ratelist:
                 self.rates[rate[0]] = rate[1]
 
-        #conn.close()
         return self
 
 
     def makeUser(self, conn, age = None, books= [], rates= {}):
 
-        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         cursor.execute('SELECT MAX(user.id) FROM user')
@@ -69,12 +66,11 @@ class User:
                 self.rates[book] = rates[book]
 
         conn.commit()
-        #conn.close()
         return self
 
     def deleteUser(self, conn):
         id = self.id
-        #conn = sqlite3.connect("bookreviews.db")
+
         cursor = conn.cursor()
 
         cursor.execute('DELETE FROM user WHERE user.id = ?', (id,))
@@ -83,7 +79,7 @@ class User:
         conn.commit()
 
         print('User {} deleted'.format(id))
-        #conn.close()
+
 
     def deleteUser_id(self, id, conn):
         #conn = sqlite3.connect("bookreviews.db")
@@ -95,10 +91,10 @@ class User:
         conn.commit()
 
         print('User {} deleted'.format(id))
-        #conn.close()
+
 
     def addBooks(self, books, conn):
-        #conn = sqlite3.connect("bookreviews.db")
+
         cursor = conn.cursor()
         for book in books:
             #add book to db
@@ -106,10 +102,10 @@ class User:
             #add books to object
             self.books.append(book)
         conn.commit()
-        #conn.close()
+
 
     def addRates(self, rates, conn):
-        #conn = sqlite3.connect("bookreviews.db")
+
         cursor = conn.cursor()
 
         for i, book in enumerate(rates):
@@ -119,10 +115,10 @@ class User:
             self.rates[book] = rates[book]
 
         conn.commit()
-        #conn.close()
+
 
     def deleteBook(self, isbn, conn):
-        #conn = sqlite3.connect("bookreviews.db")
+
         cursor = conn.cursor()
         #remove from db
         cursor.execute('DELETE FROM reviewExp WHERE (isbn = ? AND user_id = ?)', (isbn, self.id))
@@ -133,7 +129,6 @@ class User:
         if isbn in self.books: self.books.remove(isbn)
 
         conn.commit()
-        #conn.close()
 
     def recommend(self, conn):
         recommendbook(self, conn)

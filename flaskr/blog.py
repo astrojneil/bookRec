@@ -54,23 +54,29 @@ def addbooks():
         rate = request.form['rate']
         error = None
 
+        db = get_db()
+        b = Book()
+        b.title_to_book(title, db)
+        #handle book not found?
+
+        u = User()
+        u.getUser(g.user['tableid'], db)
+
         if not title:
             title = 'No Title, can\'t save book'
 
         if not rate:
             error = "No rate, can\'t save book"
 
+        if b.isbn in u.rates:
+            error = "Book already in read books!"
+
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            b = Book()
-            b.title_to_book(title, db)
-            #handle book not found?
 
-            u = User()
-            u.getUser(g.user['tableid'], db)
             u.addRates({b.isbn: rate}, db)
+            print(u.rates)
 
             db.commit()
             return redirect(url_for('blog.index'))
@@ -84,21 +90,24 @@ def addbookrec(title):
         rate = request.form['rate']
         error = None
 
+        db = get_db()
+        b = Book()
+        b.title_to_book(title, db)
+        #handle book not found?
+
+        u = User()
+        u.getUser(g.user['tableid'], db)
+
         if not rate:
             error = "No rate, can\'t save book"
+        if b.isbn in u.rates:
+            error = "Book already in read books!"
 
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            b = Book()
-            b.title_to_book(title, db)
-            #handle book not found?
 
-            u = User()
-            u.getUser(g.user['tableid'], db)
             u.addRates({b.isbn: rate}, db)
-
             db.commit()
             return redirect(url_for('blog.index'))
 

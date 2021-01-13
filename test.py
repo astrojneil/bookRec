@@ -14,9 +14,9 @@ cursor = conn.cursor()
 
 #conn.commit()
 #conn.close()
-#cursor.execute('SELECT * FROM appUser')
-#b = cursor.fetchall()
-#print(b)
+cursor.execute("SELECT * FROM appUser")
+b = cursor.fetchall()
+print(b)
 
 
 #book tests
@@ -45,9 +45,14 @@ print(b.year)
 '''
 
 #user tests
-#u = User()
+u = User()
 #u.getUser(278861, conn)
 #u.deleteUser(conn)
+#cursor.execute('DELETE FROM appUser WHERE (username = ?)', ('test',))
+cursor.execute('SELECT * FROM reviewExp WHERE (id = ?)', (278861,))
+b = cursor.fetchall()
+print(b)
+#conn.commit()
 
 '''
 u = User()
@@ -79,7 +84,7 @@ print(b)
 '''
 
 #recommender tests
-
+'''
 user1 = User()
 user1.getUser(11676, conn)
 
@@ -89,3 +94,4 @@ for i, (rate, isbn) in enumerate(rec):
     book = Book()
     book.isbn_to_book(isbn, conn)
     print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
+'''
