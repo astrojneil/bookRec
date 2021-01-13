@@ -6,7 +6,9 @@ from scipy.spatial.distance import correlation, cosine
 from scipy import optimize
 import random
 import numpy as np
-
+from users import User
+from books import Book
+import matplotlib.pyplot as plt
 
 #function to retrieve reviews from sql table
 def getReviewTable(rateType, user, conn):
@@ -166,14 +168,14 @@ def cofiCostFunc(params, Y, R, num_users, num_books,
             #select Y at these j for ith row
             Y_temp = Y[idx, j]
             #x_grad
-            Theta_grad[j, :] = np.dot(np.dot(X_temp, Theta[j, :].T) - Y_temp, X_temp) +lambda_*Theta[j, :]
+            #Theta_grad[j, :] = np.dot(np.dot(X_temp, Theta[j, :].T) - Y_temp, X_temp) +lambda_*Theta[j, :]
 
     grad = np.concatenate([X_grad.ravel(), Theta_grad.ravel()])
     return J, grad
 
 
 #find the most likely to be read over all books
-def recommendbook(user, conn):
+def recommendbook(user, conn, l):
     rateType = 'exp'
     if rateType != 'imp' and rateType != 'exp':
         print('Unknown rating type!')
@@ -192,62 +194,93 @@ def recommendbook(user, conn):
     #so that this can work with a user that's not already in the table?
     user_vec = ratings_matrix.iloc[user_loc, :].values.reshape(1, -1)
 
-    #find similar users
-    dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 10)
+    uslist = np.arange(1, 7, 1)
+    error_train = np.zeros(uslist.shape)
+    error_CV = np.zeros(uslist.shape)
+    for j, u in enumerate(uslist):
+        print('lambda: {}'.format(u))
+        #find similar users
+        dist, indices = knn_model.kneighbors(user_vec, n_neighbors= 10)
 
-    #ignore the first item, it is the original user
-    sims = 1-dist.flatten() #most similar is closest to 1
-    sim_user_ind = indices.flatten()
+        #ignore the first item, it is the original user
+        sims = 1-dist.flatten() #most similar is closest to 1
+        sim_user_ind = indices.flatten()
 
-    #list books similar users have read
-    simUserBooks, bookValues = findBooks(sim_user_ind, ratings_matrix)
-    ids = ratings_matrix.index[sim_user_ind].values
+        #new recommender"
+        #array of ratings, books bv users
+        sim_matrix =simpivot(rateType, ratings_matrix.index[sim_user_ind], conn)
 
-    #new recommender"
-    #array of ratings, books bv users
-    sim_matrix =simpivot(rateType, ratings_matrix.index[sim_user_ind], conn)
+        Y = sim_matrix.values.T
+        R = np.ones(Y.shape)*Y.astype(bool).astype(int)
+        #  Normalize Ratings
+        m, n = Y.shape
+        Ymean = np.zeros(m)
+        Ynorm = np.zeros(Y.shape)
 
-    Y = sim_matrix.values.T
-    R = np.ones(Y.shape)*Y.astype(bool).astype(int)
-    #  Normalize Ratings
-    m, n = Y.shape
-    Ymean = np.zeros(m)
-    Ynorm = np.zeros(Y.shape)
+        for i in range(m):
+            idx = R[i, :] == 1
+            Ymean[i] = np.mean(Y[i, idx])
+            Ynorm[i, idx] = Y[i, idx] - Ymean[i]
 
-    for i in range(m):
-        idx = R[i, :] == 1
-        Ymean[i] = np.mean(Y[i, idx])
-        Ynorm[i, idx] = Y[i, idx] - Ymean[i]
+        #  Useful Values
+        num_books, num_users= Y.shape
+        num_features = 10
 
-    #  Useful Values
-    num_books, num_users= Y.shape
-    num_features = 2
+        Ynorm_train = Ynorm[:, :u]
+        Ynorm_CV = Ynorm[:, -4:]
 
-    # Set Initial Parameters (Theta, X)
-    X = np.random.randn(num_books, num_features)
-    Theta = np.random.randn(num_users, num_features)
+        R_train = R[:, :u]
+        R_CV = R[:, -4:]
 
-    initial_parameters = np.concatenate([X.ravel(), Theta.ravel()])
+        #define the training books and the CV Books
 
-    # Set options for scipy.optimize.minimize
-    options = {'maxiter': 100}
+        # Set Initial Parameters (Theta, X)
+        X_train = np.random.randn(num_books, num_features)
+        Theta_train = np.ones((u, num_features))
+        #Theta_train = np.random.randn(num_users, num_features)
 
-    # Set Regularization
-    lambda_ = 10
+        X_CV = np.random.randn(num_books, num_features)
+        Theta_CV = np.ones((int(num_users*0.4), num_features))
+        #Theta_CV = np.random.randn(num_users, num_features)
 
+        initial_parameters_train = np.concatenate([X_train.ravel(), Theta_train.ravel()])
 
-    res = optimize.minimize(lambda x: cofiCostFunc(x, Ynorm, R, num_users,
+        # Set options for scipy.optimize.minimize
+        options = {'maxiter': 100}
+
+        # Set Regularization
+        lambda_ = 10
+
+        res = optimize.minimize(lambda x: cofiCostFunc(x, Ynorm_train, R_train, u,
                                                num_books, num_features, lambda_),
-                        initial_parameters,
+                        initial_parameters_train,
                         method='TNC',
                         jac=True,
                         options=options)
-    theta = res.x
+        theta = res.x
+        # Unfold the returned theta back into U and W
+        X = theta[:num_books*num_features].reshape(num_books, num_features)
+        Theta = theta[num_books*num_features:].reshape(u, num_features)
 
-    # Unfold the returned theta back into U and W
-    X = theta[:num_books*num_features].reshape(num_books, num_features)
-    Theta = theta[num_books*num_features:].reshape(num_users, num_features)
+        initial_parameters = np.concatenate([X.ravel(), Theta_train.ravel()])
+        initial_parameters_CV = np.concatenate([X.ravel(), Theta_CV.ravel()])
 
+        Jtrain, gradtrain = cofiCostFunc(initial_parameters, Ynorm_train, R_train, u, num_books, num_features, 0)
+        JCV, gradCV = cofiCostFunc(initial_parameters_CV, Ynorm_CV, R_CV, int(num_users*0.4), num_books,  num_features, 0)
+        error_train[j] = Jtrain
+        error_CV[j] = JCV
+
+
+    fig, ax = plt.subplots()
+    ax.plot(uslist, error_train, label = 'Train', marker = 'o')
+    ax.plot(uslist, error_CV, label = 'CV', marker = 'o')
+    ax.legend()
+    ax.set_xlabel('Number of Training Examples')
+    ax.set_ylabel('Error')
+    fig.savefig('Train_X_test.png')
+
+
+    '''
     #print('Recommender system learning completed.')
     p = np.dot(X, Theta.T)
     R_inv = np.where((R==0), 1, 0)
@@ -264,5 +297,19 @@ def recommendbook(user, conn):
     predictions = pd.Series(predictions)
     predictions = predictions.sort_values(ascending=False)
     recommend = predictions[:10]
+    '''
 
-    return recommend
+    return
+
+def main():
+    conn = sqlite3.connect("instance/bookreviews.db")
+    cursor = conn.cursor()
+
+    user1 = User()
+    user1.getUser(11676, conn)
+
+    rec = recommendbook(user1, conn, 10)
+
+
+if __name__ == "__main__":
+    main()

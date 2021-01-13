@@ -93,6 +93,10 @@ def addbookrec(title):
         db = get_db()
         b = Book()
         b.title_to_book(title, db)
+<<<<<<< HEAD
+=======
+        #handle book not found?
+>>>>>>> main
 
         u = User()
         u.getUser(g.user['tableid'], db)

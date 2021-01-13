@@ -19,7 +19,6 @@ class Book:
     #find a book by isbn
     def isbn_to_book(self, isbn, conn):
         self.isbn = isbn
-        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         cursor.execute('SELECT * FROM book WHERE  book.isbn = ?', (isbn,))
@@ -29,23 +28,23 @@ class Book:
         self.author = b[3]
         self.year = b[4]
 
-        #conn.close()
+        return self
+
 
     #find a book by id
     def id_to_book(self, id, conn):
         self.id = id
-        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         cursor.execute('SELECT * FROM book WHERE  book.id = ?', (id,))
         b = cursor.fetchone()
-        print(b)
         self.isbn = b[1]
         self.title = b[2]
         self.author = b[3]
         self.year = b[4]
 
-        #conn.close()
+        return self
+
 
     def title_to_book(self, title, conn):
         #parse title to core words
@@ -54,7 +53,6 @@ class Book:
 
         filtered_title = [w for w in words if not w in stop_words]
 
-        #conn = sqlite3.connect("bookreviews.db")
         cursor = conn.cursor()
 
         #create the sql command to find where title contains these words
@@ -70,6 +68,7 @@ class Book:
         #find book where title contains core words
         cursor.execute(execute_string, tuple(filtered_title))
         b = cursor.fetchone()
+<<<<<<< HEAD
         print(b)
         if b == None:
             self.findNewBook(title, conn)
@@ -100,3 +99,13 @@ class Book:
         cursor.execute("SELECT id FROM book WHERE (isbn = ? AND title = ? AND author = ? AND year = ?)", (self.isbn, self.title, self.author, self.year))
         b = cursor.fetchone()
         self.id = b
+=======
+        self.id = b[0]
+        self.isbn = b[1]
+        self.title = b[2]
+        self.author = b[3]
+        self.year = b[4]
+
+
+        return self
+>>>>>>> main
