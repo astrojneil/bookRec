@@ -3,7 +3,10 @@ from books import Book
 from recommender import *
 from bs4 import BeautifulSoup
 import requests
+import json
+import pandas as pd
 
+apikey =pd.read_csv('apikey.txt')
 #print values from DATABASE
 
 conn = sqlite3.connect("instance/bookreviews.db")
@@ -98,13 +101,30 @@ for i, (rate, isbn) in enumerate(rec):
     print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
 '''
 
-title = 'Harry Potter and the Chamber of Secrets'
+title = 'Harry Potter and the Deathly Hallows'
 titlestr = title.replace(' ', '+')
+print(titlestr)
 
-url = ("https://isbnsearch.org/search?s="+titlestr)
+url = "https://www.googleapis.com/books/v1/volumes?q=intitle:"+titlestr+"&key="+apikey['key'][0]
 
-html = requests.get(url).text
-soup = BeautifulSoup(html, 'html5lib')
-search_res = soup('p')
-for p in search_res:
-    print(p.get_text())
+loaded = requests.get(url).text
+#print(loaded)
+
+html = json.loads(loaded)
+print(html['items'][0]['volumeInfo']['title'])
+print(html['items'][0]['volumeInfo']['authors'][0])
+print(html['items'][0]['volumeInfo']['industryIdentifiers'][1]['identifier'])
+
+print(html['items'][1]['volumeInfo']['title'])
+print(html['items'][1]['volumeInfo']['authors'][0])
+print(html['items'][1]['volumeInfo']['industryIdentifiers'][1]['identifier'])
+
+print(html['items'][2]['volumeInfo']['title'])
+print(html['items'][2]['volumeInfo']['authors'][0])
+print(html['items'][2]['volumeInfo']['industryIdentifiers'][1]['identifier'])
+
+
+#soup = BeautifulSoup(html, 'html5lib')
+#search_res = soup('p')
+#for p in search_res:
+#    print(p.get_text())
