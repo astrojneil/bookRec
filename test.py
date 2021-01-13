@@ -17,9 +17,8 @@ cursor = conn.cursor()
 #b = cursor.fetchall()
 #print(b)
 
-#conn.commit()
-#conn.close()
-#cursor.execute("SELECT * FROM appUser")
+cursor.execute("DELETE FROM book WHERE (title = ?)", ("Harry Potter and the Deathly Hallows",))
+conn.commit()
 #b = cursor.fetchall()
 #print(b)
 
@@ -101,30 +100,23 @@ for i, (rate, isbn) in enumerate(rec):
     print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
 '''
 
-title = 'Harry Potter and the Deathly Hallows'
+title = 'Columbus Day'
 titlestr = title.replace(' ', '+')
-print(titlestr)
 
-url = "https://www.googleapis.com/books/v1/volumes?q=intitle:"+titlestr+"&key="+apikey['key'][0]
+url = "https://www.googleapis.com/books/v1/volumes?q=intitle:"+titlestr+"+inauthor:craig+alanson&key="+apikey['key'][0]
 
 loaded = requests.get(url).text
-#print(loaded)
 
 html = json.loads(loaded)
 print(html['items'][0]['volumeInfo']['title'])
+print(html['items'][0]['volumeInfo']['publishedDate'][:4])
 print(html['items'][0]['volumeInfo']['authors'][0])
 print(html['items'][0]['volumeInfo']['industryIdentifiers'][1]['identifier'])
 
-print(html['items'][1]['volumeInfo']['title'])
-print(html['items'][1]['volumeInfo']['authors'][0])
-print(html['items'][1]['volumeInfo']['industryIdentifiers'][1]['identifier'])
-
-print(html['items'][2]['volumeInfo']['title'])
-print(html['items'][2]['volumeInfo']['authors'][0])
-print(html['items'][2]['volumeInfo']['industryIdentifiers'][1]['identifier'])
-
-
-#soup = BeautifulSoup(html, 'html5lib')
-#search_res = soup('p')
-#for p in search_res:
-#    print(p.get_text())
+#title2 = 'Harry Potter and the Deathly Hallows'
+#b = Book()
+#b.title_to_book(title2, conn)
+#print(b.title)
+#print(b.author)
+#print(b.isbn)
+#print(b.year)

@@ -19,10 +19,12 @@ def index():
 
     #find books for this user
     posts = db.execute(
-    " SELECT title, author, rate FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
+    " SELECT title, author, rate, b.isbn FROM book b JOIN reviewExp r ON b.isbn = r.isbn WHERE r.user_id = ?", (g.user['tableid'], )).fetchall()
 
     #if no books to display as read, don't try to recommend
     if not posts:
+        bookList = []
+    elif (len(posts) < 2):
         bookList = []
     else:
         #get this user, recommend books
@@ -39,6 +41,7 @@ def index():
             bookinfo['title'] = book.title
             bookinfo['author'] = book.author
             bookinfo['rate'] = "{:0.1f}".format(rate)
+            bookinfo['isbn'] = book.isbn
             bookList.append(bookinfo)
 
     return render_template('blog/index.html', posts=posts, books=bookList)
@@ -51,23 +54,29 @@ def addbooks():
         rate = request.form['rate']
         error = None
 
+        db = get_db()
+        b = Book()
+        b.title_to_book(title, db)
+        #handle book not found?
+
+        u = User()
+        u.getUser(g.user['tableid'], db)
+
         if not title:
             title = 'No Title, can\'t save book'
 
         if not rate:
             error = "No rate, can\'t save book"
 
+        if b.isbn in u.rates:
+            error = "Book already in read books!"
+
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            b = Book()
-            b.title_to_book(title, db)
-            #handle book not found?
 
-            u = User()
-            u.getUser(g.user['tableid'], db)
             u.addRates({b.isbn: rate}, db)
+            print(u.rates)
 
             db.commit()
             return redirect(url_for('blog.index'))
@@ -81,31 +90,38 @@ def addbookrec(title):
         rate = request.form['rate']
         error = None
 
+        db = get_db()
+        b = Book()
+        b.title_to_book(title, db)
+
+        u = User()
+        u.getUser(g.user['tableid'], db)
+
         if not rate:
             error = "No rate, can\'t save book"
+        if b.isbn in u.rates:
+            error = "Book already in read books!"
 
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            b = Book()
-            b.title_to_book(title, db)
-            #handle book not found?
 
-            u = User()
-            u.getUser(g.user['tableid'], db)
             u.addRates({b.isbn: rate}, db)
-
             db.commit()
             return redirect(url_for('blog.index'))
 
     return render_template('blog/addbookrec.html', booktitle=title)
 
-@bp.route('/<int:id>/delete', methods=('POST',))
+@bp.route('/<isbn>/deleterec', methods=('GET','POST'))
 @login_required
-def delete(id):
-    get_post(id)
+def deleterec(isbn):
     db = get_db()
-    db.execute('DELETE FROM post WHERE id = ?', (id,))
+    b = Book()
+    b.isbn_to_book(isbn, db)
+
+    u =  User()
+    u.getUser(g.user['tableid'], db)
+    u.deleteBook(b.isbn, db)
+
     db.commit()
     return redirect(url_for('blog.index'))
