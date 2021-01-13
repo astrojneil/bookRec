@@ -1,7 +1,12 @@
 from users import User
 from books import Book
 from recommender import *
+from bs4 import BeautifulSoup
+import requests
+import json
+import pandas as pd
 
+apikey =pd.read_csv('apikey.txt')
 #print values from DATABASE
 
 conn = sqlite3.connect("instance/bookreviews.db")
@@ -12,11 +17,18 @@ cursor = conn.cursor()
 #b = cursor.fetchall()
 #print(b)
 
+<<<<<<< HEAD
+cursor.execute("DELETE FROM book WHERE (title = ?)", ("Harry Potter and the Deathly Hallows",))
+conn.commit()
+#b = cursor.fetchall()
+#print(b)
+=======
 #conn.commit()
 #conn.close()
 cursor.execute("SELECT * FROM appUser")
 b = cursor.fetchall()
 print(b)
+>>>>>>> main
 
 
 #book tests
@@ -49,9 +61,15 @@ u = User()
 #u.getUser(278861, conn)
 #u.deleteUser(conn)
 #cursor.execute('DELETE FROM appUser WHERE (username = ?)', ('test',))
+<<<<<<< HEAD
+#cursor.execute('SELECT * FROM reviewExp WHERE (id = ?)', (278861,))
+#b = cursor.fetchall()
+#print(b)
+=======
 cursor.execute('SELECT * FROM reviewExp WHERE (id = ?)', (278861,))
 b = cursor.fetchall()
 print(b)
+>>>>>>> main
 #conn.commit()
 
 '''
@@ -95,3 +113,27 @@ for i, (rate, isbn) in enumerate(rec):
     book.isbn_to_book(isbn, conn)
     print("{} {} (expected rating {:0.2f})".format(i+1, book.title, rate))
 '''
+<<<<<<< HEAD
+
+title = 'Columbus Day'
+titlestr = title.replace(' ', '+')
+
+url = "https://www.googleapis.com/books/v1/volumes?q=intitle:"+titlestr+"+inauthor:craig+alanson&key="+apikey['key'][0]
+
+loaded = requests.get(url).text
+
+html = json.loads(loaded)
+print(html['items'][0]['volumeInfo']['title'])
+print(html['items'][0]['volumeInfo']['publishedDate'][:4])
+print(html['items'][0]['volumeInfo']['authors'][0])
+print(html['items'][0]['volumeInfo']['industryIdentifiers'][1]['identifier'])
+
+#title2 = 'Harry Potter and the Deathly Hallows'
+#b = Book()
+#b.title_to_book(title2, conn)
+#print(b.title)
+#print(b.author)
+#print(b.isbn)
+#print(b.year)
+=======
+>>>>>>> main
