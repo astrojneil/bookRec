@@ -1,6 +1,8 @@
 import sqlite3
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from bs4 import BeautifulSoup
+import requests
 
 
 class Book:
@@ -66,10 +68,20 @@ class Book:
         cursor.execute(execute_string, tuple(filtered_title))
         b = cursor.fetchone()
         print(b)
-        self.id = b[0]
-        self.isbn = b[1]
-        self.title = b[2]
-        self.author = b[3]
-        self.year = b[4]
+        if b == None:
+            self.findNewBook(title, conn)
+        else:
+            self.id = b[0]
+            self.isbn = b[1]
+            self.title = b[2]
+            self.author = b[3]
+            self.year = b[4]
 
         #conn.close()
+
+    def findNewBook(self, title, conn):
+        titlestr = title.replace(' ', '+')
+        url = ("https://isbnsearch.org/search?s="+titlestr)
+        html = requests.get(url).text
+        soup = BeautifulSoup(html, 'html5lib')
+        search_res = soup('div', 'bookinfo')
