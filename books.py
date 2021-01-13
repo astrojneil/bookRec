@@ -68,7 +68,6 @@ class Book:
         #find book where title contains core words
         cursor.execute(execute_string, tuple(filtered_title))
         b = cursor.fetchone()
-<<<<<<< HEAD
         print(b)
         if b == None:
             self.findNewBook(title, conn)
@@ -99,13 +98,5 @@ class Book:
         cursor.execute("SELECT id FROM book WHERE (isbn = ? AND title = ? AND author = ? AND year = ?)", (self.isbn, self.title, self.author, self.year))
         b = cursor.fetchone()
         self.id = b
-=======
-        self.id = b[0]
-        self.isbn = b[1]
-        self.title = b[2]
-        self.author = b[3]
-        self.year = b[4]
-
 
         return self
->>>>>>> main
