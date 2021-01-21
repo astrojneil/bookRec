@@ -68,9 +68,13 @@ class Book:
         #find book where title contains core words
         cursor.execute(execute_string, tuple(filtered_title))
         b = cursor.fetchone()
-        print(b)
         if b == None:
-            self.findNewBook(title, conn)
+            #self.findNewBook(title, conn)
+            self.id = None
+            self.isbn = None
+            self.title = None
+            self.author = None
+            self.year = None
         else:
             self.id = b[0]
             self.isbn = b[1]
@@ -85,6 +89,30 @@ class Book:
         titlestr = title.replace(' ', '+')
 
         url = "https://www.googleapis.com/books/v1/volumes?q=intitle:"+titlestr+"&key="+apikey['key'][0]
+        loaded = requests.get(url).text
+
+        html = json.loads(loaded)
+        self.title = html['items'][0]['volumeInfo']['title']
+        self.author = html['items'][0]['volumeInfo']['authors'][0]
+        self.isbn = html['items'][0]['volumeInfo']['industryIdentifiers'][1]['identifier']
+        self.year = html['items'][0]['volumeInfo']['publishedDate'][:4]
+
+        cursor.execute('INSERT INTO book (isbn, title, author, year) VALUES (?, ?, ?, ?)', (self.isbn, self.title, self.author, self.year))
+        conn.commit()
+        cursor.execute("SELECT id FROM book WHERE (isbn = ? AND title = ? AND author = ? AND year = ?)", (self.isbn, self.title, self.author, self.year))
+        b = cursor.fetchone()
+        self.id = b
+
+        return self
+
+
+
+    def findNewBookAuthor(self, title, author, conn):
+        cursor = conn.cursor()
+        titlestr = title.replace(' ', '+')
+        authorstr = author.replace(' ','+')
+
+        url = "https://www.googleapis.com/books/v1/volumes?q=intitle:"+titlestr+"+inauthor:"+authorstr+"&key="+apikey['key'][0]
         loaded = requests.get(url).text
 
         html = json.loads(loaded)

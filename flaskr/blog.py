@@ -57,7 +57,8 @@ def addbooks():
         db = get_db()
         b = Book()
         b.title_to_book(title, db)
-        #handle book not found?
+        if b.isbn == None:
+            return redirect(url_for('blog.findBook', title=title))
 
         u = User()
         u.getUser(g.user['tableid'], db)
@@ -111,6 +112,24 @@ def addbookrec(title):
             return redirect(url_for('blog.index'))
 
     return render_template('blog/addbookrec.html', booktitle=title)
+
+@bp.route('/<title>/findBook', methods = ('GET', 'POST'))
+@login_required
+def findBook(title):
+    if request.method == 'POST':
+        author = request.form['author']
+
+        db = get_db()
+        b = Book()
+
+        if not author:
+            b.findNewBook(title, db)
+        else:
+            b.findNewBookAuthor(title, author, db)
+
+        return redirect(url_for('blog.addbookrec', title = b.title))
+    return render_template('blog/findnewbook.html', booktitle=title)
+
 
 @bp.route('/<isbn>/deleterec', methods=('GET','POST'))
 @login_required

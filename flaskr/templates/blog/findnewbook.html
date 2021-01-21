@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Add Book{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <h1> {{booktitle}} </h1>
+  <h3> This book isn't already in the database! Can you help us add it by providing the author? </h3>
+  <div> (If no, click save with form blank.) </div>
+  <form method="post">
+    <label for="author">Author</label>
+    <input name="author" id="author">{{ request.form['author'] }}</input>
+    <input type="submit" value="Save">
+  </form>
+{% endblock %}
