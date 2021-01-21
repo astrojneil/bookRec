@@ -24,5 +24,5 @@ Books and Users are also treated as their own classes in order to optimize the r
 ### App
 In order to make recommendations for new users, I constructed an app with flask. I adapted the <a href = "https://flask.palletsprojects.com/en/1.1.x/tutorial/factory/" > Flask Blog Post Tutorial </a> to save users' book and ratings to a specific profile and generate a home page that lists recommendations based on the users' stored books. 
 
-### Upcoming Developments
-Currently the only books that can be added to a user's profile need to be within the original dataset. An upcoming feature will be to implement a 'add new book' function while will make use of the <a href = "https://www.goodreads.com/api" >Goodreads API </a> to find the author and ISBN of a book given the user's input title. 
+### Other Features
+A newly added feature includes an 'add new book' function which makes use of the <a href = "https://developers.google.com/books" >Google Books API</a> to find the author and ISBN of a book given the user's input title. 
