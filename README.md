@@ -26,3 +26,6 @@ In order to make recommendations for new users, I constructed an app with flask.
 
 ### Other Features
 A newly added feature includes an 'add new book' function which makes use of the <a href = "https://developers.google.com/books" >Google Books API</a> to find the author and ISBN of a book given the user's input title. 
+
+### Future Goals
+Future goals for this project include expanding the existing book review database to include more users and more books, as the original Book Crossing database is beginning to be outdated. Another goal is to deploy is app as a web-app open to the general public for both general use and a 'crowd-source' approach to building the database. 
