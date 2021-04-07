@@ -1,4 +1,6 @@
 # Book Recommendation App
+Deployed on Heroku at : <a href="https://bookrec-app.herokuapp.com/" > https://bookrec-app.herokuapp.com/ </a>
+
 
 <b> Project: </b> Build a recommender system that could update recommendations based on read books stored by user in a database.
 
@@ -28,4 +30,4 @@ In order to make recommendations for new users, I constructed an app with flask.
 A newly added feature includes an 'add new book' function which makes use of the <a href = "https://developers.google.com/books" >Google Books API</a> to find the author and ISBN of a book given the user's input title. 
 
 ### Future Goals
-Future goals for this project include expanding the existing book review database to include more users and more books, as the original Book Crossing database is beginning to be outdated. Another goal is to deploy is app as a web-app open to the general public for both general use and a 'crowd-source' approach to building the database. 
+Future goals for this project include expanding the existing book review database to include more users and more books, as the original Book Crossing database is beginning to be outdated. With the app deployed as a web-app open to the general public there is already a 'crowd-source' approach to building the database. 
