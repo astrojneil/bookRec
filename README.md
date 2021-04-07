@@ -1,5 +1,5 @@
 # Book Recommendation App
-Deployed on Heroku at : <a href="https://bookrec-app.herokuapp.com/" > https://bookrec-app.herokuapp.com/ </a>
+Deployed with Heroku at : <a href="https://bookrec-app.herokuapp.com/" > https://bookrec-app.herokuapp.com/ </a>
 
 
 <b> Project: </b> Build a recommender system that could update recommendations based on read books stored by user in a database.
